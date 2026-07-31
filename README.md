@@ -91,6 +91,7 @@ python train.py --data-dir data/psc --sensor worldview-2
 ```
 
 Default training settings follow the paper: 600 epochs, batch size 16, Adam optimizer, initial learning rate 1e-3, and a decay factor of 0.8 every 50 epochs.
+The best checkpoint is selected by the minimum validation loss.
 
 Useful options:
 

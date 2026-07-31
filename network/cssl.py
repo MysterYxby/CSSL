@@ -5,7 +5,6 @@ import pytorch_lightning as pl
 from einops import rearrange
 from torchmetrics import Accuracy
 
-from src.metrics import D_lambda_Khan, Ds
 from .wald_utilities import genMTF_MS
 
 
@@ -214,9 +213,7 @@ class CSSL(pl.LightningModule):
 
         if self.Task:
             self.classifier = CNNClassificationHead(in_channels=dim, num_classes=num_classes)
-
-        self.Ds = Ds(ms_channels)
-        self.val_acc = Accuracy(task="multiclass", num_classes=num_classes)
+            self.val_acc = Accuracy(task="multiclass", num_classes=num_classes)
 
     def forward(self, ms, upms, pan):
         x = self.conv(torch.cat([upms, pan], dim=1))
@@ -265,17 +262,9 @@ class CSSL(pl.LightningModule):
         pred = self(ms, upms, pan)
         loss = self.loss_function(pred, ms, upms, pan, label)
         self.log(f"{stage}_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
-        if stage != "train":
-            wald_ms = genMTF_MS(pred["fused"], 4, self.sensor, self.ms_channels, self.device)
-            d_lambda = D_lambda_Khan(ms, wald_ms).mean()
-            ds_value = self.Ds(pred["fused"], pan, ms).mean()
-            hqnr = (1 - d_lambda) * (1 - ds_value)
-            self.log("DlambdaF", d_lambda.item(), on_step=False, on_epoch=True, prog_bar=False)
-            self.log("Ds", ds_value.item(), on_step=False, on_epoch=True, prog_bar=False)
-            self.log("HQNR", hqnr.item(), on_step=False, on_epoch=True, prog_bar=False)
-            if self.Task:
-                acc = self.val_acc(pred["class_logits"], label)
-                self.log("acc", acc.item(), on_step=False, on_epoch=True, prog_bar=False)
+        if stage != "train" and self.Task:
+            acc = self.val_acc(pred["class_logits"], label)
+            self.log("acc", acc.item(), on_step=False, on_epoch=True, prog_bar=False)
         return loss
 
     def training_step(self, batch, idx):

@@ -54,7 +54,7 @@ def main(args):
     checkpoint_callback = ModelCheckpoint(
         dirpath=args.checkpoint_dir,
         monitor=args.monitor,
-        mode="max",
+        mode="min",
         save_top_k=1,
         auto_insert_metric_name=False,
         filename=f"{args.experiment_name}-{args.version}",
@@ -93,7 +93,7 @@ def build_parser():
     parser.add_argument("--spatial-weight", default=1.0, type=float)
     parser.add_argument("--val-freq", default=1, type=int)
     parser.add_argument("--plot-interval", default=1, type=int)
-    parser.add_argument("--monitor", default="HQNR")
+    parser.add_argument("--monitor", default="val_loss")
     parser.add_argument("--accelerator", default="gpu")
     parser.add_argument("--devices", default=1, type=int)
     parser.add_argument("--seed", default=0, type=int)
