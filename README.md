@@ -16,7 +16,9 @@ This repository is associated with the following accepted TGRS paper:
   author={Xu, Biyun and Zheng, Yan and Mazhar, Suleman and Xu, Chenglong and Huang, Zhenghua and Li, Yansheng},
   journal={IEEE Transactions on Geoscience and Remote Sensing},
   year={2026},
-  pages={1--1},
+  volume={64},
+  number={},
+  pages={5406916-5406916},
   doi={10.1109/TGRS.2026.3716957}
 }
 ```
